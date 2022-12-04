@@ -325,8 +325,8 @@ namespace Schedule_Management
             comboBoxDataBit.SelectedIndex = 2;
             comboBoxParityBit.SelectedIndex = 0;
             comboBoxStopBit.SelectedIndex = 0;
-            textBoxServer.Text = @"DESKTOP-5UJC18V\SQLEXPRESS"; // Tên SQL server
-            textBoxDatabase.Text = "Management"; // Tên Database sử dụng
+            textBoxServer.Text = @"ADMIN-PC"; // Tên SQL server
+            textBoxDatabase.Text = "LnD_DataBase"; // Tên Database sử dụng
             textBoxTable.Text = ""; // Tên Table sử dụng
         }
         #endregion
@@ -344,7 +344,6 @@ namespace Schedule_Management
 
             // Đọc ID của thẻ từ
             iD = Com.ReadExisting();
-
 
             try
             {
@@ -445,7 +444,6 @@ namespace Schedule_Management
 
 
     }
-
 
     public class Student
     {
