@@ -28,6 +28,9 @@ namespace Schedule_Management
         // Khởi tạo list Student (bao gồm các class Student)
         public List<Student> listStudent;
 
+        //Initialize a list of classID
+        public List<Student> classIDList;
+
         // Số thứ tự sinh viên
         int number = 1;
 
@@ -38,7 +41,7 @@ namespace Schedule_Management
         int lenCom = 0;
 
         // Ngày trong tuần
-        public string[] Day_array = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+        public string[] Day_array = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
         #endregion
 
         public Form1()
@@ -67,6 +70,9 @@ namespace Schedule_Management
         }
 
         // Connect to SQL Server 
+        /*
+         *  After SQL Server is connected, classIDList will contain class infomation (className & classID) from database
+         */
         private void buttondatabase_Click(object sender, EventArgs e)
         {
             // Tạo chuỗi kết nối
@@ -78,7 +84,6 @@ namespace Schedule_Management
                 {
 
                     if (sqlcon == null) sqlcon = new SqlConnection(strcon);
-
 
                     if (sqlcon.State == ConnectionState.Closed)
                     {
@@ -99,19 +104,19 @@ namespace Schedule_Management
                     // Code tạo đối tượng thực thi truy vấn
                     SqlCommand sqlCmd = new SqlCommand();
                     sqlCmd.CommandType = CommandType.Text;
-                    sqlCmd.CommandText = String.Format(@"SELECT * FROM {0}", textBoxTable.Text);
+                    sqlCmd.CommandText = String.Format(@"SELECT * FROM Class_Infomation");
 
                     // Code để kết nối truy vấn
                     sqlCmd.Connection = sqlcon;
 
                     SqlDataReader reader = sqlCmd.ExecuteReader(); // Đổ dữ liệu từ database vào biến 'reader'
 
-                    listStudent = new List<Student>(); // Tạo list rỗng
+                    classIDList = new List<Student>(); // Tạo list rỗng
 
                     // Truyền dữ liệu từ SQL vào List Student
                     while (reader.Read())
                     {
-                        listStudent.Add(new Student(reader.GetString(0), reader.GetString(1)));
+                        classIDList.Add(new Student(reader.GetString(0), reader.GetString(1)));
                     }
                     reader.Close();
 
@@ -217,10 +222,15 @@ namespace Schedule_Management
                 }
                 reader.Close();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void getDataByDate(string date)
+        {
+
         }
 
         #endregion
@@ -454,6 +464,18 @@ namespace Schedule_Management
         {
             Name = name;
             ID = id;
+        }
+    }
+
+    public class Schedule
+    {
+        public DateTime s_Time { get; set; }
+        public string s_Class { set; get; }
+
+        public Schedule(DateTime m_time, string m_class)
+        {
+            s_Time = m_time;
+            s_Class = m_class;
         }
     }
 }
