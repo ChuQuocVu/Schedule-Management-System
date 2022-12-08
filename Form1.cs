@@ -30,6 +30,7 @@ namespace Schedule_Management
 
         //Initialize a list of classID
         public List<Student> classIDList;
+        public List<Schedule> scheduleList;
 
         // Số thứ tự sinh viên
         int number = 1;
@@ -206,21 +207,28 @@ namespace Schedule_Management
                 // Code tạo đối tượng thực thi truy vấn
                 SqlCommand sqlCmd = new SqlCommand();
                 sqlCmd.CommandType = CommandType.Text;
-                sqlCmd.CommandText = String.Format(@"SELECT * FROM {0}", textBoxTable.Text);
-
-                // Code để kết nối truy vấn
-                sqlCmd.Connection = sqlcon;
-
-                SqlDataReader reader = sqlCmd.ExecuteReader(); // Đổ dữ liệu từ database vào biến 'reader'
-
-                listStudent = new List<Student>(); // Tạo list rỗng
-
-                // Truyền dữ liệu từ SQL vào List Student
-                while (reader.Read())
+                
+                foreach(var day in Day_array)
                 {
-                    listStudent.Add(new Student(reader.GetString(0), reader.GetString(1)));
+                    sqlCmd.CommandText = String.Format(@"SELECT Time, {0} FROM Schedule WHERE {0} = {1}", day, className);
+
+                    // Code để kết nối truy vấn
+                    sqlCmd.Connection = sqlcon;
+
+                    SqlDataReader reader = sqlCmd.ExecuteReader(); // Đổ dữ liệu từ database vào biến 'reader'
+
+                    scheduleList = new List<Schedule>(); // Tạo list rỗng
+
+                    // Truyền dữ liệu từ SQL vào List Student
+                    while (reader.Read())
+                    {
+                        if(reader.GetString(1) != "NULL")
+                        {
+                            scheduleList.Add(new Schedule(reader.GetString(0), reader.GetString(1)));
+                        }
+                    }
+                    reader.Close();
                 }
-                reader.Close();
             }
             catch (Exception ex)
             {
@@ -469,13 +477,13 @@ namespace Schedule_Management
 
     public class Schedule
     {
-        public DateTime s_Time { get; set; }
-        public string s_Class { set; get; }
+        public string s_Time { get; set; }
+        public string s_Day { set; get; }
 
-        public Schedule(DateTime m_time, string m_class)
+        public Schedule(string m_time, string m_day)
         {
             s_Time = m_time;
-            s_Class = m_class;
+            s_Day = m_day;
         }
     }
 }
