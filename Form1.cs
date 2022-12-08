@@ -42,7 +42,8 @@ namespace Schedule_Management
         int lenCom = 0;
 
         // Ngày trong tuần
-        public string[] Day_array = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+        public string[] Day_range = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+
         #endregion
 
         public Form1()
@@ -83,7 +84,6 @@ namespace Schedule_Management
             {
                 try
                 {
-
                     if (sqlcon == null) sqlcon = new SqlConnection(strcon);
 
                     if (sqlcon.State == ConnectionState.Closed)
@@ -199,33 +199,49 @@ namespace Schedule_Management
 
         private void getDataByClassName(string className)
         {
-            string time_range = "";
-            DateTime time_in;
-            DateTime time_out;
+            int time_range = 0;
+            string time_in = "";
+            string time_out = "";
+            bool IsDataExist = false;
+            scheduleList = new List<Schedule>(); // Tạo list rỗng
+
             try
             {
                 // Code tạo đối tượng thực thi truy vấn
                 SqlCommand sqlCmd = new SqlCommand();
                 sqlCmd.CommandType = CommandType.Text;
-                
-                foreach(var day in Day_array)
+
+                for (int i = 0; i < Day_range.Length; i++)
                 {
-                    sqlCmd.CommandText = String.Format(@"SELECT Time, {0} FROM Schedule WHERE {0} = {1}", day, className);
+                    sqlCmd.CommandText = String.Format(@"SELECT Time, {0} FROM Schedule WHERE {1} = '{2}'", Day_range[i], Day_range[i], className);
 
                     // Code để kết nối truy vấn
                     sqlCmd.Connection = sqlcon;
 
                     SqlDataReader reader = sqlCmd.ExecuteReader(); // Đổ dữ liệu từ database vào biến 'reader'
 
-                    scheduleList = new List<Schedule>(); // Tạo list rỗng
-
                     // Truyền dữ liệu từ SQL vào List Student
                     while (reader.Read())
                     {
-                        if(reader.GetString(1) != "NULL")
+                        IsDataExist = true;
+                        time_range++;
+                        if (reader.GetString(0) != null)
                         {
-                            scheduleList.Add(new Schedule(reader.GetString(0), reader.GetString(1)));
+                            if(time_range == 1)
+                            {
+                                time_in = reader.GetString(0).Substring(0, 8);
+                            }
+                            else if(time_range == 3)
+                            {
+                                time_out = reader.GetString(0).Substring(12, 8);
+                                time_range = 0;
+                            }
                         }
+                    }
+                    if(IsDataExist)
+                    {
+                        scheduleList.Add(new Schedule(Day_range[i], time_in, time_out));
+                        IsDataExist = false;
                     }
                     reader.Close();
                 }
@@ -344,7 +360,7 @@ namespace Schedule_Management
             comboBoxParityBit.SelectedIndex = 0;
             comboBoxStopBit.SelectedIndex = 0;
             textBoxServer.Text = @"ADMIN-PC"; // Tên SQL server
-            textBoxDatabase.Text = "LnD_DataBase"; // Tên Database sử dụng
+            textBoxDatabase.Text = @"LnD_DataBase"; // Tên Database sử dụng
             textBoxTable.Text = ""; // Tên Table sử dụng
         }
         #endregion
@@ -458,9 +474,13 @@ namespace Schedule_Management
             }
         }
 
+
         #endregion
 
-
+        private void button1_Click(object sender, EventArgs e)
+        {
+            getDataByClassName("DD18DV7");
+        }
     }
 
     public class Student
@@ -477,13 +497,15 @@ namespace Schedule_Management
 
     public class Schedule
     {
-        public string s_Time { get; set; }
+        public string s_TimeIn { get; set; }
+        public string s_TimeOut { get; set; }
         public string s_Day { set; get; }
 
-        public Schedule(string m_time, string m_day)
+        public Schedule(string m_day, string m_time_in, string m_time_out)
         {
-            s_Time = m_time;
+            s_TimeIn = m_time_in;
             s_Day = m_day;
+            s_TimeOut = m_time_out;
         }
     }
 }
