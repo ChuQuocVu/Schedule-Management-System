@@ -25,18 +25,23 @@ namespace Schedule_Management
         // Tạo đối tượng kết nối
         SqlConnection sqlcon = null;
 
-        // Khởi tạo list Student (bao gồm các class Student)
-        public List<Student> listStudent;
+        // Khởi tạo list classIDList (bao gồm các class Student)
+        public List<Class> classIDList;
 
-        //Initialize a list of classID
-        public List<Student> classIDList;
+        // Initialize a schedule list of each class
         public List<Schedule> scheduleList;
 
-        // Số thứ tự sinh viên
+        // Initialize a dictionary contains class and status
+        public Dictionary<string, string> classStatus;
+
+        // Số thứ tự
         int number = 1;
 
         // Khởi tạo dataTable (datagridview)
         private System.Data.DataTable dataTable = new System.Data.DataTable();
+
+        // Initialize a table show status of each class. Ex: "DD18DV1 : In class" or "DD18DV1 : None"
+        private System.Data.DataTable Class_Status_Table = new System.Data.DataTable();
 
         // Số lượng port COM đang khả dụng 
         int lenCom = 0;
@@ -112,15 +117,26 @@ namespace Schedule_Management
 
                     SqlDataReader reader = sqlCmd.ExecuteReader(); // Đổ dữ liệu từ database vào biến 'reader'
 
-                    classIDList = new List<Student>(); // Tạo list rỗng
+                    classIDList = new List<Class>(); // Tạo list rỗng
+                    classStatus = new Dictionary<string, string>(); // Tạo dict rỗng
 
-                    // Truyền dữ liệu từ SQL vào List Student
+                    // Truyền dữ liệu từ SQL vào List Class
                     while (reader.Read())
                     {
-                        classIDList.Add(new Student(reader.GetString(0), reader.GetString(1)));
+                        classIDList.Add(new Class(reader.GetString(0), reader.GetString(1)));
                     }
                     reader.Close();
 
+                    // Truyền dữ liệu className và Status vào dict classStatus
+                    foreach (var item in classIDList)
+                    {
+                        classStatus.Add(item.Name, "None");
+                        dataGridViewStatus.Invoke(new System.Action(() =>
+                        {
+                            dataGridViewStatus.Rows.Add(item.Name, "Out");
+                            dataGridViewStatus.FirstDisplayedScrollingRowIndex = dataGridViewStatus.RowCount - 1;
+                        }));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -220,28 +236,29 @@ namespace Schedule_Management
 
                     SqlDataReader reader = sqlCmd.ExecuteReader(); // Đổ dữ liệu từ database vào biến 'reader'
 
-                    // Truyền dữ liệu từ SQL vào List Student
+                    // Truyền dữ liệu từ SQL vào scheduleList
                     while (reader.Read())
                     {
-                        IsDataExist = true;
                         time_range++;
                         if (reader.GetString(0) != null)
                         {
-                            if(time_range == 1)
+                            if (time_range == 1)
                             {
                                 time_in = reader.GetString(0).Substring(0, 8);
                             }
-                            else if(time_range == 3)
+                            else if (time_range == 3)
                             {
                                 time_out = reader.GetString(0).Substring(12, 8);
+                                IsDataExist = true;
                                 time_range = 0;
                             }
                         }
-                    }
-                    if(IsDataExist)
-                    {
-                        scheduleList.Add(new Schedule(Day_range[i], time_in, time_out));
-                        IsDataExist = false;
+
+                        if (IsDataExist)
+                        {
+                            scheduleList.Add(new Schedule(Day_range[i], time_in, time_out));
+                            IsDataExist = false;
+                        }
                     }
                     reader.Close();
                 }
@@ -252,9 +269,16 @@ namespace Schedule_Management
             }
         }
 
-        private void getDataByDate(string date)
+        private void updateClassStatus(string className, string status)
         {
-
+            foreach (var item in classIDList)
+            {
+                if (item.Name.Trim() == className)
+                {
+                    // Update Status of current className to status variable
+                    dataGridViewStatus.Rows[classIDList.IndexOf(item)].Cells[1].Value = status;
+                }
+            }
         }
 
         #endregion
@@ -265,14 +289,27 @@ namespace Schedule_Management
         private void loadDataGridView()
         {
             dataTable.Columns.Add("No.", typeof(int));
-            dataTable.Columns.Add("Name", typeof(string));
-            dataTable.Columns.Add("ID", typeof(string));
             dataTable.Columns.Add("Date and Time", typeof(DateTime));
+            dataTable.Columns.Add("Class", typeof(string));
+            dataTable.Columns.Add("ID", typeof(string));
+            dataTable.Columns.Add("Status", typeof(string));
             dataGridViewData.DataSource = dataTable;
 
             for (int i = 0; i < dataGridViewData.Columns.Count; i++)
             {
                 dataGridViewData.Columns[i].Frozen = false;
+            }
+        }
+
+        private void loadClassStatusTable()
+        {
+            Class_Status_Table.Columns.Add("Class", typeof(string));
+            Class_Status_Table.Columns.Add("Status", typeof(string));
+            dataGridViewStatus.DataSource = Class_Status_Table;
+
+            for (int i = 0; i < dataGridViewStatus.Columns.Count; i++)
+            {
+                dataGridViewStatus.Columns[i].Frozen = false;
             }
         }
 
@@ -359,9 +396,9 @@ namespace Schedule_Management
             comboBoxDataBit.SelectedIndex = 2;
             comboBoxParityBit.SelectedIndex = 0;
             comboBoxStopBit.SelectedIndex = 0;
-            textBoxServer.Text = @"ADMIN-PC"; // Tên SQL server
-            textBoxDatabase.Text = @"LnD_DataBase"; // Tên Database sử dụng
-            textBoxTable.Text = ""; // Tên Table sử dụng
+            textBoxServer.Text = @"ADMIN-PC"; // SQL Server's name -> This field should not be changed !
+            textBoxDatabase.Text = @"LnD_DataBase"; // Database's name -> This field should not be changed !
+            textBoxTable.Text = @"Class_Infomation"; // Table's name -> Can be change depend on users
         }
         #endregion
 
@@ -373,6 +410,7 @@ namespace Schedule_Management
             // Read 1 byte will interrupt COM -> Send Data from MCU to PC !
             string iD;
             string name = "No Information";
+            string status = "Invalid";
             DateTime time = DateTime.Now;
             bool check = false;
 
@@ -382,12 +420,32 @@ namespace Schedule_Management
             try
             {
                 // So sánh ID vừa đọc từ RFID với ID trong database. Nếu ID nào trùng khớp thì gán tên tương ứng trong database cho biến name
-                foreach (var item in listStudent)
+                foreach (var item in classIDList)
                 {
                     if (String.Compare(iD, item.ID.Trim()) == 0)
                     {
                         name = item.Name;
                         check = true;
+                    }
+                }
+
+                // Fill in scheduleList with current class infomation
+                getDataByClassName(name);
+
+                foreach (var item in scheduleList)
+                {
+                    // Convert timeIn & timeOut from String to TimeSpan
+                    TimeSpan m_timeIn = TimeSpan.Parse(item.s_TimeIn);
+                    TimeSpan m_timeOut = TimeSpan.Parse(item.s_TimeOut);
+                    TimeSpan now = DateTime.Now.TimeOfDay;
+
+                    if (now >= m_timeIn && now <= m_timeOut)
+                    {
+                        status = "Access";
+                    }
+                    else
+                    {
+                        status = "Invalid";
                     }
                 }
 
@@ -409,7 +467,7 @@ namespace Schedule_Management
             // Đưa dữ liệu lên dataGridView            
             dataGridViewData.Invoke(new System.Action(() =>
             {
-                dataGridViewData.Rows.Add(number, name, iD, time.ToString());
+                dataGridViewData.Rows.Add(number, time.ToString(), name, iD, status);
                 dataGridViewData.FirstDisplayedScrollingRowIndex = dataGridViewData.RowCount - 1;
             }));
 
@@ -479,16 +537,16 @@ namespace Schedule_Management
 
         private void button1_Click(object sender, EventArgs e)
         {
-            getDataByClassName("DD18DV7");
+            updateClassStatus("DD18DV1", "In class");
         }
     }
 
-    public class Student
+    public class Class
     {
         public string Name { get; set; }
         public string ID { get; set; }
 
-        public Student(string name, string id)
+        public Class(string name, string id)
         {
             Name = name;
             ID = id;
@@ -507,5 +565,10 @@ namespace Schedule_Management
             s_Day = m_day;
             s_TimeOut = m_time_out;
         }
+    }
+
+    public class Status
+    {
+
     }
 }
