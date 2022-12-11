@@ -130,7 +130,7 @@ namespace Schedule_Management
                     // Truyền dữ liệu className và Status vào dict classStatus
                     foreach (var item in classIDList)
                     {
-                        classStatus.Add(item.Name, "None");
+                        classStatus.Add(item.Name, "Out");
                         dataGridViewStatus.Invoke(new System.Action(() =>
                         {
                             dataGridViewStatus.Rows.Add(item.Name, "Out");
@@ -275,7 +275,7 @@ namespace Schedule_Management
             {
                 if (item.Name.Trim() == className)
                 {
-                    // Update Status of current className to status variable
+                    // Update dataGridView
                     dataGridViewStatus.Rows[classIDList.IndexOf(item)].Cells[1].Value = status;
                 }
             }
@@ -410,8 +410,9 @@ namespace Schedule_Management
             // Read 1 byte will interrupt COM -> Send Data from MCU to PC !
             string iD;
             string name = "No Information";
-            string status = "Invalid";
+            string status = "Denied";
             DateTime time = DateTime.Now;
+            string dateValue = time.ToString("dddd");
             bool check = false;
 
             // Đọc ID của thẻ từ
@@ -439,13 +440,56 @@ namespace Schedule_Management
                     TimeSpan m_timeOut = TimeSpan.Parse(item.s_TimeOut);
                     TimeSpan now = DateTime.Now.TimeOfDay;
 
-                    if (now >= m_timeIn && now <= m_timeOut)
+                    if (dateValue == item.s_Day)
                     {
-                        status = "Access";
+                        if (now >= m_timeIn && now <= m_timeOut)
+                        {
+                            if (classStatus[name] == "Out")
+                            {
+                                classStatus[name] = "In class";
+                                if ((now - m_timeIn).TotalMinutes > 15)
+                                {
+                                    status = "Checkin late";
+                                }
+                                else
+                                {
+                                    status = "Checkin";
+                                }
+                            }
+                            else
+                            {
+                                classStatus[name] = "Out";
+                                if (now < m_timeOut)
+                                {
+                                    status = "Checkout early";
+                                }
+                                else
+                                {
+                                    status = "Checkout";
+                                }
+                            }
+                            updateClassStatus(name, classStatus[name]);
+                        }
+                        else
+                        {
+                            if (classStatus[name] == "Out")
+                            {
+                                AutoClosingMessageBox.Show($"It's not a {name} class time right now !", "ACCESS DENIED!", 1500);
+                                status = "Denied";
+                            }
+                            else
+                            {
+                                if ((m_timeOut - now).Minutes > 15)
+                                {
+                                    AutoClosingMessageBox.Show($"Class {name} check out LATE ! Please pay attention next time !", "", 1500);
+                                    status = "Checkout late";
+                                }
+                            }
+                        }
                     }
                     else
                     {
-                        status = "Invalid";
+                        AutoClosingMessageBox.Show($"{name} doesn't have any class for today !", "", 1500);
                     }
                 }
 
@@ -453,6 +497,8 @@ namespace Schedule_Management
                 if (check == false)
                 {
                     name = "No Information";
+                    status = "Denied";
+                    AutoClosingMessageBox.Show("No infomation !", "ACCESS DENIED!", 1500);
                 }
             }
             catch (Exception ex)
@@ -461,7 +507,14 @@ namespace Schedule_Management
             }
 
             // Gửi data đến MCU
-            Com.WriteLine(name);
+            if (status != "Denied")
+            {
+                Com.WriteLine("Status: Access!");
+            }
+            else
+            {
+                Com.WriteLine("Status: Denied!");
+            }
 
 
             // Đưa dữ liệu lên dataGridView            
@@ -472,7 +525,6 @@ namespace Schedule_Management
             }));
 
             number++;
-
         }
         #endregion
 
@@ -535,12 +587,9 @@ namespace Schedule_Management
 
         #endregion
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            updateClassStatus("DD18DV1", "In class");
-        }
     }
 
+    #region Initialize all classes use in program
     public class Class
     {
         public string Name { get; set; }
@@ -567,8 +616,35 @@ namespace Schedule_Management
         }
     }
 
-    public class Status
+    public class AutoClosingMessageBox
     {
-
+        System.Threading.Timer _timeoutTimer;
+        string _caption;
+        AutoClosingMessageBox(string text, string caption, int timeout)
+        {
+            _caption = caption;
+            _timeoutTimer = new System.Threading.Timer(OnTimerElapsed,
+                null, timeout, System.Threading.Timeout.Infinite);
+            using (_timeoutTimer)
+                MessageBox.Show(text, caption);
+        }
+        public static void Show(string text, string caption, int timeout)
+        {
+            new AutoClosingMessageBox(text, caption, timeout);
+        }
+        void OnTimerElapsed(object state)
+        {
+            IntPtr mbWnd = FindWindow("#32770", _caption); // lpClassName is #32770 for MessageBox
+            if (mbWnd != IntPtr.Zero)
+                SendMessage(mbWnd, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+            _timeoutTimer.Dispose();
+        }
+        const int WM_CLOSE = 0x0010;
+        [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
+        static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        static extern IntPtr SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, IntPtr lParam);
     }
+    #endregion
+
 }
