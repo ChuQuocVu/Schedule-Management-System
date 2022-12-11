@@ -509,11 +509,11 @@ namespace Schedule_Management
             // Gửi data đến MCU
             if (status != "Denied")
             {
-                Com.WriteLine("Status: Access!");
+                Com.WriteLine("Status: ACCESS!");
             }
             else
             {
-                Com.WriteLine("Status: Denied!");
+                Com.WriteLine("Status: DENIED!");
             }
 
 
