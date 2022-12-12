@@ -43,6 +43,10 @@ namespace Schedule_Management
         // Initialize a table show status of each class. Ex: "DD18DV1 : In class" or "DD18DV1 : None"
         private System.Data.DataTable Class_Status_Table = new System.Data.DataTable();
 
+        // Initialize a table show schedule of all class in week
+        private System.Data.DataTable Schedule_Table = new System.Data.DataTable();
+        SqlDataAdapter adapter = new SqlDataAdapter();
+
         // Số lượng port COM đang khả dụng 
         int lenCom = 0;
 
@@ -209,6 +213,7 @@ namespace Schedule_Management
                 exportExcel(dataGridViewData, dialog.FileName);
             }
         }
+
         #endregion
 
         #region Support Functions
@@ -311,6 +316,15 @@ namespace Schedule_Management
             {
                 dataGridViewStatus.Columns[i].Frozen = false;
             }
+        }
+
+        private void loadScheduleGridView()
+        {
+            SqlCommand sqlCmd = new SqlCommand("SELECT * FROM Schedule", sqlcon);
+            adapter.SelectCommand = sqlCmd;
+            Schedule_Table.Clear();
+            adapter.Fill(Schedule_Table);
+            dataGridViewSchedule.DataSource = Schedule_Table;
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -586,7 +600,6 @@ namespace Schedule_Management
 
 
         #endregion
-
     }
 
     #region Initialize all classes use in program
