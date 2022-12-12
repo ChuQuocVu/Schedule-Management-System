@@ -528,6 +528,7 @@ namespace Schedule_Management
             this.buttonSaveSchedule.TabIndex = 44;
             this.buttonSaveSchedule.Text = "Save";
             this.buttonSaveSchedule.UseVisualStyleBackColor = true;
+            this.buttonSaveSchedule.Click += new System.EventHandler(this.buttonSaveSchedule_Click);
             // 
             // groupBox4
             // 
