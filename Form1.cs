@@ -34,6 +34,10 @@ namespace Schedule_Management
         // Initialize a dictionary contains class and status
         public Dictionary<string, string> classStatus;
 
+        // Lesson by time in and time out
+        public Dictionary<int, string> lessonByTimeIn;
+        public Dictionary<int, string> lessonByTimeOut;
+
         // Số thứ tự
         int number = 1;
 
@@ -214,6 +218,18 @@ namespace Schedule_Management
             }
         }
 
+        private void buttonSaveSchedule_Click(object sender, EventArgs e)
+        {
+            string date_string = txtDate.Text;
+            string className = txtClassName.Text;
+            string timeIn = txtTimeIn.Text;
+            string timeOut = txtTimeOut.Text;
+            int lesson;
+
+            string dayOfWeek = DateTime.Parse(date_string).ToString("dddd");
+
+        }
+
         #endregion
 
         #region Support Functions
@@ -283,6 +299,35 @@ namespace Schedule_Management
                     // Update dataGridView
                     dataGridViewStatus.Rows[classIDList.IndexOf(item)].Cells[1].Value = status;
                 }
+            }
+        }
+
+        private void getLessonByTimeIn_Out()
+        {
+            lessonByTimeIn = new Dictionary<int, string>();
+            lessonByTimeOut = new Dictionary<int, string>();
+            try
+            {
+                // Code tạo đối tượng thực thi truy vấn
+                SqlCommand sqlCmd = new SqlCommand();
+                sqlCmd.CommandType = CommandType.Text;
+
+                sqlCmd.CommandText = String.Format(@"SELECT Lesson, Time FROM Schedule");
+
+                // Code để kết nối truy vấn
+                sqlCmd.Connection = sqlcon;
+
+                SqlDataReader reader = sqlCmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    lessonByTimeIn.Add(reader.GetInt32(0), reader.GetString(1).Substring(0, 8));
+                    lessonByTimeOut.Add(reader.GetInt32(0), reader.GetString(1).Substring(12, 8));
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -600,6 +645,7 @@ namespace Schedule_Management
 
 
         #endregion
+
     }
 
     #region Initialize all classes use in program
