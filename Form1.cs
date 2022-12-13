@@ -131,7 +131,7 @@ namespace Schedule_Management
                     // Truyền dữ liệu từ SQL vào List Class
                     while (reader.Read())
                     {
-                        classIDList.Add(new Class(reader.GetString(0), reader.GetString(1)));
+                        classIDList.Add(new Class(reader.GetString(0).Trim(), reader.GetString(1).Trim()));
                     }
                     reader.Close();
 
@@ -471,8 +471,10 @@ namespace Schedule_Management
             string name = "No Information";
             string status = "Denied";
             DateTime time = DateTime.Now;
+            TimeSpan now = DateTime.Now.TimeOfDay;
             string dateValue = time.ToString("dddd");
             bool check = false;
+            bool IsClass = false;
 
             // Đọc ID của thẻ từ
             iD = Com.ReadExisting();
@@ -484,7 +486,7 @@ namespace Schedule_Management
                 {
                     if (String.Compare(iD, item.ID.Trim()) == 0)
                     {
-                        name = item.Name;
+                        name = item.Name.Trim();
                         check = true;
                     }
                 }
@@ -495,12 +497,12 @@ namespace Schedule_Management
                 foreach (var item in scheduleList)
                 {
                     // Convert timeIn & timeOut from String to TimeSpan
-                    TimeSpan m_timeIn = TimeSpan.Parse(item.s_TimeIn);
-                    TimeSpan m_timeOut = TimeSpan.Parse(item.s_TimeOut);
-                    TimeSpan now = DateTime.Now.TimeOfDay;
+                    TimeSpan m_timeIn = DateTime.Parse(item.s_TimeIn).TimeOfDay;
+                    TimeSpan m_timeOut = DateTime.Parse(item.s_TimeOut).TimeOfDay;
 
                     if (dateValue == item.s_Day)
                     {
+                        IsClass = true;
                         if (now >= m_timeIn && now <= m_timeOut)
                         {
                             if (classStatus[name] == "Out")
@@ -536,20 +538,25 @@ namespace Schedule_Management
                                 AutoClosingMessageBox.Show($"It's not a {name} class time right now !", "ACCESS DENIED!", 1500);
                                 status = "Denied";
                             }
-                            else
+                            else if (classStatus[name] == "In class")
                             {
-                                if ((m_timeOut - now).Minutes > 15)
+                                if (now > m_timeOut)
                                 {
+                                    classStatus[name] = "Out";
                                     AutoClosingMessageBox.Show($"Class {name} check out LATE ! Please pay attention next time !", "", 1500);
                                     status = "Checkout late";
+                                    updateClassStatus(name, classStatus[name]);
                                 }
                             }
                         }
                     }
-                    else
-                    {
-                        AutoClosingMessageBox.Show($"{name} doesn't have any class for today !", "", 1500);
-                    }
+                }
+
+                // Nếu không có ngày nào trong lịch của lớp đó trùng khớp với ngày hôm nay
+                // -> hiện thông báo "Không có lớp trong hôm nay"
+                if(!IsClass)
+                {
+                    AutoClosingMessageBox.Show($"{name} doesn't have any class for today !", "", 1500);
                 }
 
                 // Nếu không có ID nào trùng khớp thì biến name = 'No Infomation'
@@ -568,11 +575,11 @@ namespace Schedule_Management
             // Gửi data đến MCU
             if (status != "Denied")
             {
-                Com.WriteLine("Status: ACCESS!");
+                Com.WriteLine($"Class: {name}  A");
             }
             else
             {
-                Com.WriteLine("Status: DENIED!");
+                Com.WriteLine($"Class: {name}  D");
             }
 
 
