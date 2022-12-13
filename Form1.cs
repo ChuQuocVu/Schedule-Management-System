@@ -535,7 +535,7 @@ namespace Schedule_Management
                         {
                             if (classStatus[name] == "Out")
                             {
-                                AutoClosingMessageBox.Show($"It's not a {name} class time right now !", "ACCESS DENIED!", 1500);
+                                AutoClosingMessageBox.Show($"It's not a {name} class time right now !", "ACCESS DENIED!", 2000);
                                 status = "Denied";
                             }
                             else if (classStatus[name] == "In class")
@@ -543,7 +543,7 @@ namespace Schedule_Management
                                 if (now > m_timeOut)
                                 {
                                     classStatus[name] = "Out";
-                                    AutoClosingMessageBox.Show($"Class {name} check out LATE ! Please pay attention next time !", "", 1500);
+                                    AutoClosingMessageBox.Show($"Class {name} check out LATE ! Please pay attention next time !", "", 2000);
                                     status = "Checkout late";
                                     updateClassStatus(name, classStatus[name]);
                                 }
@@ -556,7 +556,7 @@ namespace Schedule_Management
                 // -> hiện thông báo "Không có lớp trong hôm nay"
                 if(!IsClass)
                 {
-                    AutoClosingMessageBox.Show($"{name} doesn't have any class for today !", "", 1500);
+                    AutoClosingMessageBox.Show($"{name} doesn't have any class for today !", "", 2000);
                 }
 
                 // Nếu không có ID nào trùng khớp thì biến name = 'No Infomation'
@@ -564,7 +564,7 @@ namespace Schedule_Management
                 {
                     name = "No Information";
                     status = "Denied";
-                    AutoClosingMessageBox.Show("No infomation !", "ACCESS DENIED!", 1500);
+                    AutoClosingMessageBox.Show("No infomation !", "ACCESS DENIED!", 2000);
                 }
             }
             catch (Exception ex)
