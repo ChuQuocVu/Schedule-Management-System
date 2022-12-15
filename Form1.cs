@@ -102,14 +102,14 @@ namespace Schedule_Management
                     if (sqlcon.State == ConnectionState.Closed)
                     {
                         sqlcon.Open();
-                        MessageBox.Show("       Connect Sucessfull !");
+                        AutoClosingMessageBox.Show("       Connect Sucessfull !", "", 1500);
                         buttondatabase.ForeColor = Color.Red;
                         buttondatabase.Text = "Disconnect to Database";
                     }
                     else if (sqlcon != null && sqlcon.State == ConnectionState.Open)
                     {
                         sqlcon.Close();
-                        MessageBox.Show("       Disconnected !");
+                        AutoClosingMessageBox.Show("       Disconnected !", "", 1500);
                         buttondatabase.ForeColor = Color.LimeGreen;
                         buttondatabase.Text = "Connect to Database";
                         sqlcon = null;
@@ -135,16 +135,24 @@ namespace Schedule_Management
                     }
                     reader.Close();
 
-                    // Truyền dữ liệu className và Status vào dict classStatus
+                    // CLear & Refresh dataGridViewStatus when click buttondatabase
+                    dataGridViewStatus.Rows.Clear();
+                    dataGridViewStatus.Refresh();
                     foreach (var item in classIDList)
                     {
+                        // Truyền PairKeyValue{className, "Out"} vào dictionary classStatus
                         classStatus.Add(item.Name, "Out");
+                        // Đẩy dữ liệu trong classStatus lên dataGridViewStatus
                         dataGridViewStatus.Invoke(new System.Action(() =>
                         {
                             dataGridViewStatus.Rows.Add(item.Name, "Out");
                             dataGridViewStatus.FirstDisplayedScrollingRowIndex = dataGridViewStatus.RowCount - 1;
                         }));
                     }
+
+                    // Load Schedule to dataGridViewSchedule
+                    loadScheduleGridView();
+
                 }
                 catch (Exception ex)
                 {
@@ -220,13 +228,58 @@ namespace Schedule_Management
 
         private void buttonSaveSchedule_Click(object sender, EventArgs e)
         {
-            string date_string = txtDate.Text;
-            string className = txtClassName.Text;
-            string timeIn = txtTimeIn.Text;
-            string timeOut = txtTimeOut.Text;
-            int lesson;
+            if (txtClassName.Text != "" && txtDate.Text != "" && txtTimeIn.Text != "" && txtTimeOut.Text != "")
+            {
+                string date_string = txtDate.Text;
+                string className = txtClassName.Text;
+                string timeIn = txtTimeIn.Text;
+                string timeOut = txtTimeOut.Text;
+                int lessonIn = 0;
+                int lessonOut = 0;
 
-            string dayOfWeek = DateTime.Parse(date_string).ToString("dddd");
+                string dayOfWeek = DateTime.Parse(date_string).ToString("dddd");
+
+                // Get lesson match each time_in and time_out in day
+                getLessonByTimeIn_Out();
+
+                foreach (KeyValuePair<int, string> item in lessonByTimeIn)
+                {
+                    if (item.Value == timeIn)
+                    {
+                        lessonIn = item.Key;
+                    }
+                }
+
+                foreach (KeyValuePair<int, string> item in lessonByTimeOut)
+                {
+                    if (item.Value == timeOut)
+                    {
+                        lessonOut = item.Key;
+                    }
+                }
+
+                try
+                {
+                    SqlCommand sqlCmd = new SqlCommand($"UPDATE Schedule SET {dayOfWeek} = '{className}' " +
+                                                        $"WHERE Lesson BETWEEN {lessonIn} AND {lessonOut}", sqlcon);
+                    sqlCmd.ExecuteNonQuery();
+                    AutoClosingMessageBox.Show("Done!", "", 1500);
+                    loadScheduleGridView();
+                    txtDate.Text = txtClassName.Text = txtTimeIn.Text = txtTimeOut.Text = "";
+                }
+                catch (Exception ex)
+                {
+                    AutoClosingMessageBox.Show(ex.Message, "", 2000);
+                }
+            }
+            else
+            {
+                AutoClosingMessageBox.Show("Please fill all infomation !", "Missing Info", 2000);
+            }
+        }
+
+        private void buttonSelectDate_Click(object sender, EventArgs e)
+        {
 
         }
 
@@ -324,6 +377,7 @@ namespace Schedule_Management
                     lessonByTimeIn.Add(reader.GetInt32(0), reader.GetString(1).Substring(0, 8));
                     lessonByTimeOut.Add(reader.GetInt32(0), reader.GetString(1).Substring(12, 8));
                 }
+                reader.Close();
             }
             catch(Exception ex)
             {
