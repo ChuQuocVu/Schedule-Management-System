@@ -41,6 +41,9 @@ namespace Schedule_Management
         // Số thứ tự
         int number = 1;
 
+        // Flag check the first time start program
+        bool IsFirstTime = true;
+
         // Khởi tạo dataTable (datagridview)
         private System.Data.DataTable dataTable = new System.Data.DataTable();
 
@@ -57,6 +60,9 @@ namespace Schedule_Management
         // Ngày trong tuần
         public string[] Day_range = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
 
+        // Danh sách các lớp học
+        public List<string> className_range;
+
         #endregion
 
         public Form1()
@@ -71,6 +77,12 @@ namespace Schedule_Management
             comboBoxParityBit.Items.AddRange(paritybits);
             string[] stopbits = { "1", "1.5", "2" };
             comboBoxStopBit.Items.AddRange(stopbits);
+            string[] Time_In_range = { "", "07:00 AM", "08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
+                                        "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM", "06:00 PM" };
+            comboBoxTimeIn.Items.AddRange(Time_In_range);
+            string[] Time_Out_range = { "", "08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
+                                        "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM", "06:00 PM", "07:00 PM" };
+            comboBoxTimeOut.Items.AddRange(Time_Out_range);
         }
 
         #region Button Click Events
@@ -126,7 +138,12 @@ namespace Schedule_Management
                     SqlDataReader reader = sqlCmd.ExecuteReader(); // Đổ dữ liệu từ database vào biến 'reader'
 
                     classIDList = new List<Class>(); // Tạo list rỗng
-                    classStatus = new Dictionary<string, string>(); // Tạo dict rỗng
+                    className_range = new List<string>();
+                    className_range.Add("");
+                    if (IsFirstTime)
+                    {
+                        classStatus = new Dictionary<string, string>(); // Tạo dict rỗng
+                    }
 
                     // Truyền dữ liệu từ SQL vào List Class
                     while (reader.Read())
@@ -140,19 +157,43 @@ namespace Schedule_Management
                     dataGridViewStatus.Refresh();
                     foreach (var item in classIDList)
                     {
-                        // Truyền PairKeyValue{className, "Out"} vào dictionary classStatus
-                        classStatus.Add(item.Name, "Out");
-                        // Đẩy dữ liệu trong classStatus lên dataGridViewStatus
-                        dataGridViewStatus.Invoke(new System.Action(() =>
+                        className_range.Add(item.Name);
+                        // If this is the first time start program
+                        if (IsFirstTime)
                         {
-                            dataGridViewStatus.Rows.Add(item.Name, "Out");
-                            dataGridViewStatus.FirstDisplayedScrollingRowIndex = dataGridViewStatus.RowCount - 1;
-                        }));
+                            // Truyền PairKeyValue{className, "Out"} vào dictionary classStatus
+                            classStatus.Add(item.Name, "Out");
+
+                            // Đẩy dữ liệu trong classStatus lên dataGridViewStatus
+                            dataGridViewStatus.Invoke(new System.Action(() =>
+                            {
+                                dataGridViewStatus.Rows.Add(item.Name, "Out");
+                                dataGridViewStatus.FirstDisplayedScrollingRowIndex = dataGridViewStatus.RowCount - 1;
+                            }));
+                        }
+                        else
+                        {
+                            if (!classStatus.ContainsKey(item.Name))
+                            {
+                                classStatus.Add(item.Name, "Out");
+                            }
+                            // Đẩy dữ liệu trong classStatus lên dataGridViewStatus
+                            dataGridViewStatus.Invoke(new System.Action(() =>
+                            {
+                                dataGridViewStatus.Rows.Add(item.Name, classStatus[item.Name]);
+                                dataGridViewStatus.FirstDisplayedScrollingRowIndex = dataGridViewStatus.RowCount - 1;
+                            }));
+                        }
                     }
+
+                    // A signal: This is not a first time start program
+                    IsFirstTime = false;
 
                     // Load Schedule to dataGridViewSchedule
                     loadScheduleGridView();
 
+                    // Add value to comboBoxClassName
+                    comboBoxClassName.Items.AddRange(className_range.ToArray());
                 }
                 catch (Exception ex)
                 {
@@ -228,12 +269,12 @@ namespace Schedule_Management
 
         private void buttonSaveSchedule_Click(object sender, EventArgs e)
         {
-            if (txtClassName.Text != "" && txtDate.Text != "" && txtTimeIn.Text != "" && txtTimeOut.Text != "")
+            if (comboBoxTimeIn.Text != "" && comboBoxTimeOut.Text != "")
             {
-                string date_string = txtDate.Text;
-                string className = txtClassName.Text;
-                string timeIn = txtTimeIn.Text;
-                string timeOut = txtTimeOut.Text;
+                string date_string = datePicker.Text;
+                string className = comboBoxClassName.Text;
+                string timeIn = comboBoxTimeIn.Text;
+                string timeOut = comboBoxTimeOut.Text;
                 int lessonIn = 0;
                 int lessonOut = 0;
 
@@ -265,7 +306,6 @@ namespace Schedule_Management
                     sqlCmd.ExecuteNonQuery();
                     AutoClosingMessageBox.Show("Done!", "", 1500);
                     loadScheduleGridView();
-                    txtDate.Text = txtClassName.Text = txtTimeIn.Text = txtTimeOut.Text = "";
                 }
                 catch (Exception ex)
                 {
@@ -278,10 +318,6 @@ namespace Schedule_Management
             }
         }
 
-        private void buttonSelectDate_Click(object sender, EventArgs e)
-        {
-
-        }
 
         #endregion
 
