@@ -13,7 +13,7 @@ using System.IO;
 using System.IO.Ports;
 using Microsoft.Office.Interop.Excel;
 using System.Data.SqlClient;
-
+using System.Data.OleDb;
 
 namespace Schedule_Management
 {
@@ -425,6 +425,28 @@ namespace Schedule_Management
             }
         }
 
+        private void createScheduleTableInDataBase(string tableName)
+        {
+            try
+            {
+                SqlCommand sqlCmd = new SqlCommand($"CREATE TABLE {tableName} (Lesson int, Time nvarchar(225), " +
+                                                    $"Monday nvarchar(225), Tuesday nvarchar(225), " +
+                                                    $"Wednesday nvarchar(225), Thursday nvarchar(225), " +
+                                                    $"Friday nvarchar(225), Saturday nvarchar(225)," +
+                                                    $"Sunday nvarchar(225))", sqlcon);
+
+                sqlCmd.ExecuteNonQuery();
+                AutoClosingMessageBox.Show($"Created {tableName}", "", 1000);
+            }
+            catch(Exception ex)
+            {
+                if (ex.Message == $"There is already an object named '{tableName}' in the database.")
+                {
+                    AutoClosingMessageBox.Show($"Used {tableName}", "", 1000);
+                }
+            }
+        }
+
         #endregion
 
         #region Setup DataGridView
@@ -688,7 +710,7 @@ namespace Schedule_Management
         }
         #endregion
 
-        #region Code export file Excel
+        #region Connect MySQL - Excel
         private void exportExcel(DataGridView gridData, string nameFile)
         {
             Microsoft.Office.Interop.Excel.Application excel;
@@ -744,6 +766,10 @@ namespace Schedule_Management
             }
         }
 
+        private void Import_Schedule_From_Excel(string fileName)
+        {
+
+        }
 
         #endregion
 
