@@ -186,11 +186,15 @@ namespace Schedule_Management
                         }
                     }
 
-                    // A signal: This is not a first time start program
+                    // First time flag: Set this flag to false -> This is not a first time start program
                     IsFirstTime = false;
 
                     // Load Schedule to dataGridViewSchedule
                     loadScheduleGridView();
+
+                    // Refresh comboBoxClassName before add value
+                    comboBoxClassName.Items.Clear();
+                    comboBoxClassName.Refresh();
 
                     // Add value to comboBoxClassName
                     comboBoxClassName.Items.AddRange(className_range.ToArray());
