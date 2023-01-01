@@ -82,6 +82,7 @@ namespace Schedule_Management
             this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.buttonSaveSchedule = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.comboBoxClassName = new System.Windows.Forms.ComboBox();
             this.comboBoxTimeOut = new System.Windows.Forms.ComboBox();
             this.comboBoxTimeIn = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
@@ -90,7 +91,6 @@ namespace Schedule_Management
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.dataGridViewSchedule = new System.Windows.Forms.DataGridView();
-            this.comboBoxClassName = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewData)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -423,7 +423,7 @@ namespace Schedule_Management
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(93, 17);
             this.label9.TabIndex = 31;
-            this.label9.Text = "Class Name";
+            this.label9.Text = "Class Table";
             // 
             // textBoxTable
             // 
@@ -540,6 +540,14 @@ namespace Schedule_Management
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Schedule Infomation";
             // 
+            // comboBoxClassName
+            // 
+            this.comboBoxClassName.FormattingEnabled = true;
+            this.comboBoxClassName.Location = new System.Drawing.Point(37, 112);
+            this.comboBoxClassName.Name = "comboBoxClassName";
+            this.comboBoxClassName.Size = new System.Drawing.Size(267, 24);
+            this.comboBoxClassName.TabIndex = 58;
+            // 
             // comboBoxTimeOut
             // 
             this.comboBoxTimeOut.FormattingEnabled = true;
@@ -642,14 +650,6 @@ namespace Schedule_Management
             this.dataGridViewSchedule.Size = new System.Drawing.Size(833, 379);
             this.dataGridViewSchedule.StandardTab = true;
             this.dataGridViewSchedule.TabIndex = 46;
-            // 
-            // comboBoxClassName
-            // 
-            this.comboBoxClassName.FormattingEnabled = true;
-            this.comboBoxClassName.Location = new System.Drawing.Point(37, 112);
-            this.comboBoxClassName.Name = "comboBoxClassName";
-            this.comboBoxClassName.Size = new System.Drawing.Size(267, 24);
-            this.comboBoxClassName.TabIndex = 58;
             // 
             // Form1
             // 
