@@ -442,8 +442,116 @@ namespace Schedule_Management
             {
                 if (ex.Message == $"There is already an object named '{tableName}' in the database.")
                 {
-                    AutoClosingMessageBox.Show($"Used {tableName}", "", 1000);
+                    AutoClosingMessageBox.Show($"Rewrite {tableName}", "", 1000);
+                    // If tableName is already exist -> Clear table to fill new data
+                    clearDataInDataBase(tableName);
                 }
+            }
+        }
+
+        private System.Data.DataTable readDataFromExcel(string filePath)
+        {
+            /* This function read data from file excel
+             * return: a DataTable contain all data rows in file excel
+             */
+
+            System.Data.DataTable data = null;
+            string excelCon = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + filePath.Trim() + ";Extended Properties=Excel 8.0";
+            // Create connection object
+            OleDbConnection oledbCon = new OleDbConnection(excelCon);
+
+            try
+            {
+                oledbCon.Open();
+                OleDbCommand cmd = new OleDbCommand("SELECT * FROM [Sheet1$]", oledbCon);
+                OleDbDataAdapter olebdAdapter = new OleDbDataAdapter();
+                olebdAdapter.SelectCommand = cmd;
+
+                DataSet ds = new DataSet();
+                // FIll data from excel to Dataset ds
+                olebdAdapter.Fill(ds);
+                data = ds.Tables[0];
+
+            }
+            catch(Exception ex)
+            {
+                AutoClosingMessageBox.Show(ex.Message, "", 1500);
+            }
+            finally
+            {
+                oledbCon.Close();
+            }
+
+            return data;
+        }
+
+        private void insertDataIntoDataBase(string tableName, List<object> arg)
+        {
+            /* This function insert new line data to schedule table in SQL 
+             * Parameters: 
+             *      - tableName: Name of table use to contain schedule import from excel
+             *      - arg: a list contain fields of schedule:
+             *              + Lesson [index 0]: int
+             *              + Time [index 1]: string
+             *              + Monday -> Sunday [index 2 -> 8]: string
+             */
+            try
+            {
+                SqlCommand sqlCmd = new SqlCommand($"INSERT INTO {tableName} " +
+                    $"(Lesson, Time, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday) " +
+                    $"VALUE ({arg[0]}, {arg[1]}, {arg[2]}, {arg[3]}, {arg[4]}, {arg[5]}, " +
+                    $"{arg[6]}, {arg[7]}, {arg[8]})", sqlcon);
+                sqlCmd.ExecuteNonQuery();
+            }
+            catch(Exception ex)
+            {
+                AutoClosingMessageBox.Show(ex.Message, "", 1500);
+            }
+        }
+
+        private void clearDataInDataBase(string tableName)
+        {
+            /* This function clear all data in Database table*/
+
+            try
+            {
+                SqlCommand sqlCmd = new SqlCommand($"DELETE FROM {tableName}", sqlcon);
+                sqlCmd.ExecuteNonQuery();
+            }
+            catch(Exception ex)
+            {
+                AutoClosingMessageBox.Show(ex.Message, "", 1500);
+            }
+        }
+
+        private void importDataFromDataTableIntoDataBase(string tableName, System.Data.DataTable data)
+        {
+            /* This function transfer data from DataTable to SQL */
+
+            if (data == null || data.Rows.Count == 0)
+            {
+                AutoClosingMessageBox.Show("No schedule to import!", "", 2000);
+                return;
+            }
+
+            List<object> argument = new List<object>();
+
+            try
+            {
+                foreach (DataRow dataRow in data.Rows)
+                {
+                    foreach (DataColumn dataColumn in data.Columns)
+                    {
+                        argument.Add(dataRow[dataColumn].ToString().Trim());
+                    }
+                    argument[0] = Convert.ToInt32(argument[0]);
+                    insertDataIntoDataBase(tableName, argument);
+                    argument.Clear();
+                }
+            }
+            catch(Exception ex)
+            {
+                AutoClosingMessageBox.Show(ex.Message, "", 1500);
             }
         }
 
@@ -766,9 +874,20 @@ namespace Schedule_Management
             }
         }
 
-        private void Import_Schedule_From_Excel(string fileName)
+        private void Import_Schedule_From_Excel(string filePath)
         {
+            /* Name of file Excel should be like this: 'Schedule_{tableName}': 
+             * Ex: Schedule_Week1 -> tableName is Week1
+             */
 
+            System.Data.DataTable data = readDataFromExcel(filePath);
+
+            // Get tableName from file path
+            string[] token = Path.GetFileName(filePath).Split('.');
+            string tableName = token[0];
+            // Create table contain schedule if it not exist
+            createScheduleTableInDataBase(tableName);
+            importDataFromDataTableIntoDataBase(tableName, data);
         }
 
         #endregion
