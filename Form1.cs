@@ -271,6 +271,33 @@ namespace Schedule_Management
             }
         }
 
+        private void btnImportExcel_Click(object sender, EventArgs e)
+        {
+            string filePath = "";
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                filePath = ofd.FileName;
+            }
+
+            if (filePath != "")
+            {
+                try
+                {
+                    Import_Schedule_From_Excel(filePath);
+                }
+                catch(Exception ex)
+                {
+                    AutoClosingMessageBox.Show(ex.Message, "", 1500);
+                }
+            }
+            else
+            {
+                AutoClosingMessageBox.Show("FilePath is empty!", "", 1500);
+            }
+        }
+
         private void buttonSaveSchedule_Click(object sender, EventArgs e)
         {
             if (comboBoxTimeIn.Text != "" && comboBoxTimeOut.Text != "")
@@ -499,8 +526,8 @@ namespace Schedule_Management
             {
                 SqlCommand sqlCmd = new SqlCommand($"INSERT INTO {tableName} " +
                     $"(Lesson, Time, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday) " +
-                    $"VALUE ({arg[0]}, {arg[1]}, {arg[2]}, {arg[3]}, {arg[4]}, {arg[5]}, " +
-                    $"{arg[6]}, {arg[7]}, {arg[8]})", sqlcon);
+                    $"VALUES ({arg[0]}, '{arg[1]}', '{arg[2]}', '{arg[3]}', '{arg[4]}', '{arg[5]}', " +
+                    $"'{arg[6]}', '{arg[7]}', '{arg[8]}')", sqlcon);
                 sqlCmd.ExecuteNonQuery();
             }
             catch(Exception ex)
@@ -548,6 +575,7 @@ namespace Schedule_Management
                     insertDataIntoDataBase(tableName, argument);
                     argument.Clear();
                 }
+                AutoClosingMessageBox.Show("Done!", "", 1500);
             }
             catch(Exception ex)
             {
@@ -884,14 +912,14 @@ namespace Schedule_Management
 
             // Get tableName from file path
             string[] token = Path.GetFileName(filePath).Split('.');
-            string tableName = token[0];
+            string fileName = token[0];
+            string tableName = fileName.Split('_')[1];
             // Create table contain schedule if it not exist
             createScheduleTableInDataBase(tableName);
             importDataFromDataTableIntoDataBase(tableName, data);
         }
 
         #endregion
-
     }
 
     #region Initialize all classes use in program
