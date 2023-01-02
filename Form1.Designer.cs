@@ -91,6 +91,7 @@ namespace Schedule_Management
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.dataGridViewSchedule = new System.Windows.Forms.DataGridView();
+            this.btnImportExcel = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewData)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -355,7 +356,7 @@ namespace Schedule_Management
             // 
             // buttonDelete
             // 
-            this.buttonDelete.Location = new System.Drawing.Point(484, 12);
+            this.buttonDelete.Location = new System.Drawing.Point(476, 12);
             this.buttonDelete.Name = "buttonDelete";
             this.buttonDelete.Size = new System.Drawing.Size(161, 30);
             this.buttonDelete.TabIndex = 1;
@@ -651,12 +652,23 @@ namespace Schedule_Management
             this.dataGridViewSchedule.StandardTab = true;
             this.dataGridViewSchedule.TabIndex = 46;
             // 
+            // btnImportExcel
+            // 
+            this.btnImportExcel.Location = new System.Drawing.Point(643, 12);
+            this.btnImportExcel.Name = "btnImportExcel";
+            this.btnImportExcel.Size = new System.Drawing.Size(161, 30);
+            this.btnImportExcel.TabIndex = 47;
+            this.btnImportExcel.Text = "Import File(*.xlsx)";
+            this.btnImportExcel.UseVisualStyleBackColor = true;
+            this.btnImportExcel.Click += new System.EventHandler(this.btnImportExcel_Click);
+            // 
             // Form1
             // 
             this.AcceptButton = this.buttondatabase;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1485, 748);
+            this.Controls.Add(this.btnImportExcel);
             this.Controls.Add(this.dataGridViewSchedule);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.dataGridViewStatus);
@@ -735,6 +747,7 @@ namespace Schedule_Management
         private System.Windows.Forms.ComboBox comboBoxTimeOut;
         private System.Windows.Forms.ComboBox comboBoxTimeIn;
         private System.Windows.Forms.ComboBox comboBoxClassName;
+        private System.Windows.Forms.Button btnImportExcel;
     }
 }
 
