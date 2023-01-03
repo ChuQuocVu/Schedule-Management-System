@@ -189,9 +189,6 @@ namespace Schedule_Management
                     // First time flag: Set this flag to false -> This is not a first time start program
                     IsFirstTime = false;
 
-                    // Load Schedule to dataGridViewSchedule
-                    loadScheduleGridView();
-
                     // Refresh comboBoxClassName before add value
                     comboBoxClassName.Items.Clear();
                     comboBoxClassName.Refresh();
@@ -201,6 +198,9 @@ namespace Schedule_Management
 
                     // Add value to comboBoxSchedule
                     getAllTableInDataBase();
+
+                    // Load Schedule to dataGridViewSchedule
+                    loadScheduleGridView();
                 }
                 catch (Exception ex)
                 {
@@ -592,8 +592,12 @@ namespace Schedule_Management
             System.Data.DataTable tables = sqlcon.GetSchema("Tables");
             foreach (DataRow row in tables.Rows)
             {
-                comboBoxSchedule.Items.Add(row[2].ToString());
+                if (row[2].ToString() != "Class_Infomation")
+                {
+                    comboBoxSchedule.Items.Add(row[2].ToString());
+                }
             }
+            comboBoxSchedule.SelectedIndex = 0;
         }
 
         #endregion
@@ -630,9 +634,10 @@ namespace Schedule_Management
 
         private void loadScheduleGridView()
         {
+            string tableName = comboBoxSchedule.Text.Trim();
             try
             {
-                SqlCommand sqlCmd = new SqlCommand($"SELECT * FROM {comboBoxSchedule.Text}", sqlcon);
+                SqlCommand sqlCmd = new SqlCommand($"SELECT * FROM {tableName}", sqlcon);
                 adapter.SelectCommand = sqlCmd;
                 Schedule_Table.Clear();
                 adapter.Fill(Schedule_Table);
