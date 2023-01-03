@@ -335,7 +335,7 @@ namespace Schedule_Management
 
                 try
                 {
-                    SqlCommand sqlCmd = new SqlCommand($"UPDATE Schedule SET {dayOfWeek} = '{className}' " +
+                    SqlCommand sqlCmd = new SqlCommand($"UPDATE {comboBoxSchedule.Text.Trim()} SET {dayOfWeek} = '{className}' " +
                                                         $"WHERE Lesson BETWEEN {lessonIn} AND {lessonOut}", sqlcon);
                     sqlCmd.ExecuteNonQuery();
                     AutoClosingMessageBox.Show("Done!", "", 1500);
@@ -373,7 +373,8 @@ namespace Schedule_Management
 
                 for (int i = 0; i < Day_range.Length; i++)
                 {
-                    sqlCmd.CommandText = String.Format(@"SELECT Time, {0} FROM Schedule WHERE {1} = '{2}'", Day_range[i], Day_range[i], className);
+                    sqlCmd.CommandText = String.Format(@"SELECT Time, {0} FROM {1} WHERE {2} = '{3}'", 
+                                                        Day_range[i], comboBoxSchedule.Text.Trim(), Day_range[i], className);
 
                     // Code để kết nối truy vấn
                     sqlCmd.Connection = sqlcon;
@@ -435,7 +436,7 @@ namespace Schedule_Management
                 SqlCommand sqlCmd = new SqlCommand();
                 sqlCmd.CommandType = CommandType.Text;
 
-                sqlCmd.CommandText = String.Format(@"SELECT Lesson, Time FROM Schedule");
+                sqlCmd.CommandText = $"SELECT Lesson, Time FROM {comboBoxSchedule.Text.Trim()}";
 
                 // Code để kết nối truy vấn
                 sqlCmd.Connection = sqlcon;
