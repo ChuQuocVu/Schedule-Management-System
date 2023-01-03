@@ -198,6 +198,9 @@ namespace Schedule_Management
 
                     // Add value to comboBoxClassName
                     comboBoxClassName.Items.AddRange(className_range.ToArray());
+
+                    // Add value to comboBoxSchedule
+                    getAllTableInDataBase();
                 }
                 catch (Exception ex)
                 {
@@ -583,6 +586,16 @@ namespace Schedule_Management
             }
         }
 
+        private void getAllTableInDataBase()
+        {
+            comboBoxSchedule.Items.Clear();
+            System.Data.DataTable tables = sqlcon.GetSchema("Tables");
+            foreach (DataRow row in tables.Rows)
+            {
+                comboBoxSchedule.Items.Add(row[2].ToString());
+            }
+        }
+
         #endregion
 
         #region Setup DataGridView
@@ -617,11 +630,18 @@ namespace Schedule_Management
 
         private void loadScheduleGridView()
         {
-            SqlCommand sqlCmd = new SqlCommand("SELECT * FROM Schedule", sqlcon);
-            adapter.SelectCommand = sqlCmd;
-            Schedule_Table.Clear();
-            adapter.Fill(Schedule_Table);
-            dataGridViewSchedule.DataSource = Schedule_Table;
+            try
+            {
+                SqlCommand sqlCmd = new SqlCommand($"SELECT * FROM {comboBoxSchedule.Text}", sqlcon);
+                adapter.SelectCommand = sqlCmd;
+                Schedule_Table.Clear();
+                adapter.Fill(Schedule_Table);
+                dataGridViewSchedule.DataSource = Schedule_Table;
+            }
+            catch(Exception ex)
+            {
+                AutoClosingMessageBox.Show(ex.Message, "", 1500);
+            }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -641,6 +661,12 @@ namespace Schedule_Management
         #endregion
 
         #region Setup UART Box and SQL Server Box
+
+        // Code load thời khóa biểu từ comboBoxSchedule
+        private void comboBoxSchedule_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            loadScheduleGridView();
+        }
 
         // Code chọn Baud Rate từ comboBox
         private void comboBoxBaudRate_SelectedIndexChanged(object sender, EventArgs e)
