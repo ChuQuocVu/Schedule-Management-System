@@ -28,6 +28,8 @@ namespace Schedule_Management
         // Khởi tạo list classIDList (bao gồm các class Student)
         public List<Class> classIDList;
 
+        public List<string> classNameList;
+
         // Initialize a schedule list of each class
         public List<Schedule> scheduleList;
 
@@ -130,7 +132,7 @@ namespace Schedule_Management
                     // Code tạo đối tượng thực thi truy vấn
                     SqlCommand sqlCmd = new SqlCommand();
                     sqlCmd.CommandType = CommandType.Text;
-                    sqlCmd.CommandText = String.Format(@"SELECT * FROM Class_Infomation");
+                    sqlCmd.CommandText = String.Format(@"SELECT * FROM Class_Information");
 
                     // Code để kết nối truy vấn
                     sqlCmd.Connection = sqlcon;
@@ -138,6 +140,7 @@ namespace Schedule_Management
                     SqlDataReader reader = sqlCmd.ExecuteReader(); // Đổ dữ liệu từ database vào biến 'reader'
 
                     classIDList = new List<Class>(); // Tạo list rỗng
+                    classNameList = new List<string>();
                     className_range = new List<string>();
                     className_range.Add("");
                     if (IsFirstTime)
@@ -149,38 +152,44 @@ namespace Schedule_Management
                     while (reader.Read())
                     {
                         classIDList.Add(new Class(reader.GetString(0).Trim(), reader.GetString(1).Trim(), reader.GetString(2).Trim()));
+                        classNameList.Add(reader.GetString(1).Trim());
                     }
                     reader.Close();
+
+                    classNameList = classNameList.Distinct().ToList<string>();
 
                     // CLear & Refresh dataGridViewStatus when click buttondatabase
                     dataGridViewStatus.Rows.Clear();
                     dataGridViewStatus.Refresh();
-                    foreach (var item in classIDList)
+                    foreach (var item in classNameList)
                     {
-                        className_range.Add(item.Name);
+                        className_range.Add(item);
                         // If this is the first time start program
                         if (IsFirstTime)
                         {
                             // Truyền PairKeyValue{className, "Out"} vào dictionary classStatus
-                            classStatus.Add(item.Name, "Out");
+                            if (classStatus.ContainsKey(item) == false)
+                            {
+                                classStatus.Add(item, "Out");
+                            }
 
                             // Đẩy dữ liệu trong classStatus lên dataGridViewStatus
                             dataGridViewStatus.Invoke(new System.Action(() =>
                             {
-                                dataGridViewStatus.Rows.Add(item.Name, "Out");
+                                dataGridViewStatus.Rows.Add(item, "Out");
                                 dataGridViewStatus.FirstDisplayedScrollingRowIndex = dataGridViewStatus.RowCount - 1;
                             }));
                         }
                         else
                         {
-                            if (!classStatus.ContainsKey(item.Name))
+                            if (!classStatus.ContainsKey(item))
                             {
-                                classStatus.Add(item.Name, "Out");
+                                classStatus.Add(item, "Out");
                             }
                             // Đẩy dữ liệu trong classStatus lên dataGridViewStatus
                             dataGridViewStatus.Invoke(new System.Action(() =>
                             {
-                                dataGridViewStatus.Rows.Add(item.Name, classStatus[item.Name]);
+                                dataGridViewStatus.Rows.Add(item, classStatus[item]);
                                 dataGridViewStatus.FirstDisplayedScrollingRowIndex = dataGridViewStatus.RowCount - 1;
                             }));
                         }
