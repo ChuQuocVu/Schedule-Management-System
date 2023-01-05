@@ -152,6 +152,7 @@ namespace Schedule_Management
             this.Controls.Add(this.txt_TImeOut);
             this.Controls.Add(this.txt_TimeIn);
             this.Name = "Filter";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Filter";
             this.Load += new System.EventHandler(this.Filter_Load);
             this.ResumeLayout(false);
