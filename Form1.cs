@@ -274,6 +274,7 @@ namespace Schedule_Management
             }
         }
 
+        // Nút bấm import file excel
         private void btnImportExcel_Click(object sender, EventArgs e)
         {
             string filePath = "";
@@ -301,6 +302,7 @@ namespace Schedule_Management
             }
         }
 
+        // Nút bấm lưu thời gian biểu
         private void buttonSaveSchedule_Click(object sender, EventArgs e)
         {
             if (comboBoxTimeIn.Text != "" && comboBoxTimeOut.Text != "")
@@ -352,6 +354,12 @@ namespace Schedule_Management
             }
         }
 
+        // Nút bấm lọc hoạt động của sinh viên
+        private void btnFilter_Click(object sender, EventArgs e)
+        {
+            Filter searchTable = new Filter();
+            searchTable.Show();
+        }
 
         #endregion
 
@@ -389,11 +397,11 @@ namespace Schedule_Management
                         {
                             if (time_range == 1)
                             {
-                                time_in = reader.GetString(0).Substring(0, 8);
+                                time_in = reader.GetString(0).Substring(0, 10);
                             }
                             else if (time_range == 3)
                             {
-                                time_out = reader.GetString(0).Substring(12, 8);
+                                time_out = reader.GetString(0).Substring(11, 10);
                                 IsDataExist = true;
                                 time_range = 0;
                             }
@@ -610,7 +618,7 @@ namespace Schedule_Management
         {
             dataTable.Columns.Add("No.", typeof(int));
             dataTable.Columns.Add("Date and Time", typeof(DateTime));
-            dataTable.Columns.Add("Class", typeof(string));
+            dataTable.Columns.Add("Name", typeof(string));
             dataTable.Columns.Add("ID", typeof(string));
             dataTable.Columns.Add("Status", typeof(string));
             dataGridViewData.DataSource = dataTable;
@@ -875,7 +883,7 @@ namespace Schedule_Management
             // Đưa dữ liệu lên dataGridView            
             dataGridViewData.Invoke(new System.Action(() =>
             {
-                dataGridViewData.Rows.Add(number, time.ToString(), name, iD, status);
+                dataGridViewData.Rows.Add(number, time.ToString(), studentName, iD, status);
                 dataGridViewData.FirstDisplayedScrollingRowIndex = dataGridViewData.RowCount - 1;
             }));
 
@@ -957,6 +965,7 @@ namespace Schedule_Management
         }
 
         #endregion
+
     }
 
     #region Initialize all classes use in program
