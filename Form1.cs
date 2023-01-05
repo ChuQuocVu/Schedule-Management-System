@@ -148,7 +148,7 @@ namespace Schedule_Management
                     // Truyền dữ liệu từ SQL vào List Class
                     while (reader.Read())
                     {
-                        classIDList.Add(new Class(reader.GetString(0).Trim(), reader.GetString(1).Trim()));
+                        classIDList.Add(new Class(reader.GetString(0).Trim(), reader.GetString(1).Trim(), reader.GetString(2).Trim()));
                     }
                     reader.Close();
 
@@ -753,6 +753,7 @@ namespace Schedule_Management
             // Read 1 byte will interrupt COM -> Send Data from MCU to PC !
             string iD;
             string name = "No Information";
+            string studentName = "No Information";
             string status = "Denied";
             DateTime time = DateTime.Now;
             TimeSpan now = DateTime.Now.TimeOfDay;
@@ -771,6 +772,7 @@ namespace Schedule_Management
                     if (String.Compare(iD, item.ID.Trim()) == 0)
                     {
                         name = item.Name.Trim();
+                        studentName = item.studentName.Trim();
                         check = true;
                     }
                 }
@@ -840,13 +842,16 @@ namespace Schedule_Management
                 // -> hiện thông báo "Không có lớp trong hôm nay"
                 if(!IsClass)
                 {
-                    AutoClosingMessageBox.Show($"{name} doesn't have any class for today !", "", 2000);
+                    if (name != "No Information")
+                    {
+                        AutoClosingMessageBox.Show($"{name} doesn't have any class for today !", "", 2000);
+                    }
                 }
 
                 // Nếu không có ID nào trùng khớp thì biến name = 'No Infomation'
                 if (check == false)
                 {
-                    name = "No Information";
+                    studentName = "No Information";
                     status = "Denied";
                     AutoClosingMessageBox.Show("No infomation !", "ACCESS DENIED!", 2000);
                 }
@@ -859,11 +864,11 @@ namespace Schedule_Management
             // Gửi data đến MCU
             if (status != "Denied")
             {
-                Com.WriteLine($"Class: {name}  A");
+                Com.WriteLine($"Class: {name}  A {studentName}");
             }
             else
             {
-                Com.WriteLine($"Class: {name}  D");
+                Com.WriteLine($"Class: {name}  D {studentName}");
             }
 
 
@@ -957,11 +962,13 @@ namespace Schedule_Management
     #region Initialize all classes use in program
     public class Class
     {
+        public string studentName { get; set; }
         public string Name { get; set; }
         public string ID { get; set; }
 
-        public Class(string name, string id)
+        public Class(string m_studentName, string name, string id)
         {
+            studentName = m_studentName;
             Name = name;
             ID = id;
         }
