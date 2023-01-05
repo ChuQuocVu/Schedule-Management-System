@@ -93,6 +93,7 @@ namespace Schedule_Management
             this.label11 = new System.Windows.Forms.Label();
             this.dataGridViewSchedule = new System.Windows.Forms.DataGridView();
             this.btnImportExcel = new System.Windows.Forms.Button();
+            this.btnFilter = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewData)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -162,7 +163,7 @@ namespace Schedule_Management
             // 
             // Column2
             // 
-            this.Column2.HeaderText = "Class Name";
+            this.Column2.HeaderText = "Name";
             this.Column2.MinimumWidth = 6;
             this.Column2.Name = "Column2";
             // 
@@ -703,12 +704,25 @@ namespace Schedule_Management
             this.btnImportExcel.UseVisualStyleBackColor = true;
             this.btnImportExcel.Click += new System.EventHandler(this.btnImportExcel_Click);
             // 
+            // btnFilter
+            // 
+            this.btnFilter.Location = new System.Drawing.Point(810, 12);
+            this.btnFilter.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnFilter.Name = "btnFilter";
+            this.btnFilter.Size = new System.Drawing.Size(161, 30);
+            this.btnFilter.TabIndex = 48;
+            this.btnFilter.Text = "Search Student Name";
+            this.btnFilter.UseVisualStyleBackColor = true;
+            this.btnFilter.Click += new System.EventHandler(this.btnFilter_Click);
+            // 
             // Form1
             // 
             this.AcceptButton = this.buttondatabase;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.Beige;
             this.ClientSize = new System.Drawing.Size(1485, 748);
+            this.Controls.Add(this.btnFilter);
             this.Controls.Add(this.btnImportExcel);
             this.Controls.Add(this.dataGridViewSchedule);
             this.Controls.Add(this.groupBox4);
@@ -742,7 +756,7 @@ namespace Schedule_Management
 
         #endregion
 
-        private System.Windows.Forms.DataGridView dataGridViewData;
+        public System.Windows.Forms.DataGridView dataGridViewData;
         private System.Windows.Forms.Button buttonConnect;
         private System.Windows.Forms.Label labelStatus;
         private System.Windows.Forms.GroupBox groupBox2;
@@ -770,11 +784,6 @@ namespace Schedule_Management
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox textBoxTable;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
         private System.Windows.Forms.DataGridView dataGridViewStatus;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
@@ -791,6 +800,12 @@ namespace Schedule_Management
         private System.Windows.Forms.ComboBox comboBoxClassName;
         private System.Windows.Forms.Button btnImportExcel;
         private System.Windows.Forms.ComboBox comboBoxSchedule;
+        private System.Windows.Forms.Button btnFilter;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
     }
 }
 
