@@ -570,7 +570,7 @@ namespace Schedule_Management
             // 
             this.comboBoxSchedule.FormattingEnabled = true;
             this.comboBoxSchedule.Location = new System.Drawing.Point(145, 16);
-            this.comboBoxSchedule.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.comboBoxSchedule.Margin = new System.Windows.Forms.Padding(4);
             this.comboBoxSchedule.Name = "comboBoxSchedule";
             this.comboBoxSchedule.Size = new System.Drawing.Size(160, 24);
             this.comboBoxSchedule.TabIndex = 48;
@@ -681,14 +681,14 @@ namespace Schedule_Management
             dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridViewSchedule.DefaultCellStyle = dataGridViewCellStyle13;
             this.dataGridViewSchedule.GridColor = System.Drawing.SystemColors.ButtonShadow;
-            this.dataGridViewSchedule.Location = new System.Drawing.Point(640, 378);
+            this.dataGridViewSchedule.Location = new System.Drawing.Point(640, 357);
             this.dataGridViewSchedule.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dataGridViewSchedule.Name = "dataGridViewSchedule";
             this.dataGridViewSchedule.RowHeadersWidth = 51;
             dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.dataGridViewSchedule.RowsDefaultCellStyle = dataGridViewCellStyle14;
             this.dataGridViewSchedule.RowTemplate.Height = 24;
-            this.dataGridViewSchedule.Size = new System.Drawing.Size(833, 358);
+            this.dataGridViewSchedule.Size = new System.Drawing.Size(833, 379);
             this.dataGridViewSchedule.StandardTab = true;
             this.dataGridViewSchedule.TabIndex = 46;
             // 
