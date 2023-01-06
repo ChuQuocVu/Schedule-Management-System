@@ -406,11 +406,11 @@ namespace Schedule_Management
                         {
                             if (time_range == 1)
                             {
-                                time_in = reader.GetString(0).Substring(0, 10);
+                                time_in = reader.GetString(0).Substring(0, 8);
                             }
                             else if (time_range == 3)
                             {
-                                time_out = reader.GetString(0).Substring(11, 10);
+                                time_out = reader.GetString(0).Substring(12, 8);
                                 IsDataExist = true;
                                 time_range = 0;
                             }
@@ -433,12 +433,12 @@ namespace Schedule_Management
 
         private void updateClassStatus(string className, string status)
         {
-            foreach (var item in classIDList)
+            // Update dataGridView
+            foreach (var item in classNameList)
             {
-                if (item.Name.Trim() == className)
+                if (item == className)
                 {
-                    // Update dataGridView
-                    dataGridViewStatus.Rows[classIDList.IndexOf(item)].Cells[1].Value = status;
+                    dataGridViewStatus.Rows[classNameList.IndexOf(item)].Cells[1].Value = status;
                 }
             }
         }
@@ -628,6 +628,7 @@ namespace Schedule_Management
             dataTable.Columns.Add("No.", typeof(int));
             dataTable.Columns.Add("Date and Time", typeof(DateTime));
             dataTable.Columns.Add("Name", typeof(string));
+            dataTable.Columns.Add("Class", typeof(string));
             dataTable.Columns.Add("ID", typeof(string));
             dataTable.Columns.Add("Status", typeof(string));
             dataGridViewData.DataSource = dataTable;
@@ -758,7 +759,7 @@ namespace Schedule_Management
             comboBoxStopBit.SelectedIndex = 0;
             textBoxServer.Text = @"ADMIN-PC"; // SQL Server's name -> This field should not be changed !
             textBoxDatabase.Text = @"LnD_DataBase"; // Database's name -> This field should not be changed !
-            textBoxTable.Text = @"Class_Infomation"; // Table's name -> Can be change depend on users
+            textBoxTable.Text = @"Class_Information"; // Table's name -> Can be change depend on users
         }
         #endregion
 
@@ -810,7 +811,10 @@ namespace Schedule_Management
                         {
                             if (classStatus[name] == "Out")
                             {
-                                classStatus[name] = "In class";
+                                if (studentName == $"Class_{name}")
+                                {
+                                    classStatus[name] = "In class";
+                                }
                                 if ((now - m_timeIn).TotalMinutes > 15)
                                 {
                                     status = "Checkin late";
@@ -822,7 +826,10 @@ namespace Schedule_Management
                             }
                             else
                             {
-                                classStatus[name] = "Out";
+                                if (studentName == $"Class_{name}")
+                                {
+                                    classStatus[name] = "Out";
+                                }
                                 if (now < m_timeOut)
                                 {
                                     status = "Checkout early";
@@ -870,7 +877,7 @@ namespace Schedule_Management
                 {
                     studentName = "No Information";
                     status = "Denied";
-                    AutoClosingMessageBox.Show("No infomation !", "ACCESS DENIED!", 2000);
+                    AutoClosingMessageBox.Show("No information !", "ACCESS DENIED!", 2000);
                 }
             }
             catch (Exception ex)
@@ -881,18 +888,18 @@ namespace Schedule_Management
             // Gửi data đến MCU
             if (status != "Denied")
             {
-                Com.WriteLine($"Class: {name}  A {studentName}");
+                Com.WriteLine($"Class: {name}  A");
             }
             else
             {
-                Com.WriteLine($"Class: {name}  D {studentName}");
+                Com.WriteLine($"Class: {name}  D");
             }
 
 
             // Đưa dữ liệu lên dataGridView            
             dataGridViewData.Invoke(new System.Action(() =>
             {
-                dataGridViewData.Rows.Add(number, time.ToString(), studentName, iD, status);
+                dataGridViewData.Rows.Add(number, time.ToString(), studentName, name, iD, status);
                 dataGridViewData.FirstDisplayedScrollingRowIndex = dataGridViewData.RowCount - 1;
             }));
 
