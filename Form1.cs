@@ -22,6 +22,13 @@ namespace Schedule_Management
 
         #region Declare the variables to be used in this program
 
+        public static bool isClick = false;
+        public static string f_time_in;
+        public static string f_time_out;
+        public static string f_status;
+        public static string f_name;
+        public static string f_date;
+
         // Tạo đối tượng kết nối
         SqlConnection sqlcon = null;
 
@@ -365,8 +372,9 @@ namespace Schedule_Management
 
         // Nút bấm lọc hoạt động của sinh viên
         private void btnFilter_Click(object sender, EventArgs e)
-        {
+        {        
             Filter searchTable = new Filter();
+            Filtering();
             searchTable.Show();
         }
 
@@ -616,6 +624,44 @@ namespace Schedule_Management
                 }
             }
             comboBoxSchedule.SelectedIndex = 0;
+        }
+
+        public void Filtering()
+        {
+            bool isFirst = true;
+            bool isName = false;
+
+            f_date = datePicker.Text;
+            f_name = txtBoxSearchName.Text;
+
+            for (int r = 0; r < dataGridViewData.Rows.Count; r++)
+            {
+                string[] token = dataGridViewData.Rows[r].Cells[1].Value.ToString().Trim().Split(' ');
+                if (token[0] == f_date)
+                {
+                    if (dataGridViewData.Rows[r].Cells[2].Value.ToString().Trim() == f_name)
+                    {
+                        isName = true;
+                        if (isFirst)
+                        {
+                            if (dataGridViewData.Rows[r].Cells[5].Value.ToString().Trim() != "Denied")
+                            {
+                                f_time_in = $"{token[1]} {token[2]}";
+                                f_status = dataGridViewData.Rows[r].Cells[5].Value.ToString().Trim();
+                            }
+                            isFirst = false;
+                        }
+                        else
+                        {
+                            f_time_out = $"{token[1]} {token[2]}";
+                        }
+                    }
+                }
+            }
+            if (!isName)
+            {
+                AutoClosingMessageBox.Show($"Can't find '{txtBoxSearchName.Text}' in system's history!", "", 1500);
+            }
         }
 
         #endregion
