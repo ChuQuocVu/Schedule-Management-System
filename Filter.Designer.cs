@@ -29,6 +29,7 @@ namespace Schedule_Management
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.txt_TimeIn = new System.Windows.Forms.TextBox();
             this.txt_TImeOut = new System.Windows.Forms.TextBox();
             this.txt_Status = new System.Windows.Forms.TextBox();
@@ -37,8 +38,7 @@ namespace Schedule_Management
             this.label5 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.btn_Filter = new System.Windows.Forms.Button();
-            this.datePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // txt_TimeIn
@@ -114,35 +114,12 @@ namespace Schedule_Management
             this.label3.TabIndex = 10;
             this.label3.Text = "Status";
             // 
-            // btn_Filter
-            // 
-            this.btn_Filter.Location = new System.Drawing.Point(317, 41);
-            this.btn_Filter.Name = "btn_Filter";
-            this.btn_Filter.Size = new System.Drawing.Size(115, 40);
-            this.btn_Filter.TabIndex = 11;
-            this.btn_Filter.Text = "Search";
-            this.btn_Filter.UseVisualStyleBackColor = true;
-            this.btn_Filter.Click += new System.EventHandler(this.btn_Filter_Click);
-            // 
-            // datePicker1
-            // 
-            this.datePicker1.CustomFormat = "MM/dd/yyyy";
-            this.datePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.datePicker1.Location = new System.Drawing.Point(183, 11);
-            this.datePicker1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.datePicker1.Name = "datePicker1";
-            this.datePicker1.Size = new System.Drawing.Size(121, 22);
-            this.datePicker1.TabIndex = 55;
-            this.datePicker1.ValueChanged += new System.EventHandler(this.datePicker1_ValueChanged);
-            // 
             // Filter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.ClientSize = new System.Drawing.Size(469, 181);
-            this.Controls.Add(this.datePicker1);
-            this.Controls.Add(this.btn_Filter);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label5);
@@ -162,15 +139,14 @@ namespace Schedule_Management
 
         #endregion
 
-        private System.Windows.Forms.TextBox txt_TimeIn;
-        private System.Windows.Forms.TextBox txt_TImeOut;
-        private System.Windows.Forms.TextBox txt_Status;
-        private System.Windows.Forms.TextBox txt_FilterName;
+        public System.Windows.Forms.TextBox txt_TimeIn;
+        public System.Windows.Forms.TextBox txt_TImeOut;
+        public System.Windows.Forms.TextBox txt_Status;
+        public System.Windows.Forms.TextBox txt_FilterName;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button btn_Filter;
-        private System.Windows.Forms.DateTimePicker datePicker1;
+        private System.Windows.Forms.Timer timer2;
     }
 }

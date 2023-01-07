@@ -45,6 +45,12 @@ namespace Schedule_Management
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridViewData = new System.Windows.Forms.DataGridView();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.buttonConnect = new System.Windows.Forms.Button();
             this.labelStatus = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -89,12 +95,7 @@ namespace Schedule_Management
             this.dataGridViewSchedule = new System.Windows.Forms.DataGridView();
             this.btnImportExcel = new System.Windows.Forms.Button();
             this.btnFilter = new System.Windows.Forms.Button();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.txtBoxSearchName = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewData)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -149,6 +150,43 @@ namespace Schedule_Management
             this.dataGridViewData.Size = new System.Drawing.Size(877, 290);
             this.dataGridViewData.StandardTab = true;
             this.dataGridViewData.TabIndex = 0;
+            // 
+            // Column1
+            // 
+            this.Column1.FillWeight = 50F;
+            this.Column1.HeaderText = "NO.";
+            this.Column1.MinimumWidth = 6;
+            this.Column1.Name = "Column1";
+            // 
+            // Column4
+            // 
+            this.Column4.HeaderText = "Date and Time";
+            this.Column4.MinimumWidth = 6;
+            this.Column4.Name = "Column4";
+            // 
+            // Column2
+            // 
+            this.Column2.HeaderText = "Name";
+            this.Column2.MinimumWidth = 6;
+            this.Column2.Name = "Column2";
+            // 
+            // Column6
+            // 
+            this.Column6.HeaderText = "Class";
+            this.Column6.MinimumWidth = 6;
+            this.Column6.Name = "Column6";
+            // 
+            // Column3
+            // 
+            this.Column3.HeaderText = "ID";
+            this.Column3.MinimumWidth = 6;
+            this.Column3.Name = "Column3";
+            // 
+            // Column5
+            // 
+            this.Column5.HeaderText = "Status";
+            this.Column5.MinimumWidth = 6;
+            this.Column5.Name = "Column5";
             // 
             // buttonConnect
             // 
@@ -587,7 +625,7 @@ namespace Schedule_Management
             // 
             // datePicker
             // 
-            this.datePicker.CustomFormat = "yyyy/MM/dd";
+            this.datePicker.CustomFormat = "M/d/yyy";
             this.datePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.datePicker.Location = new System.Drawing.Point(37, 55);
             this.datePicker.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -677,7 +715,7 @@ namespace Schedule_Management
             // 
             // btnFilter
             // 
-            this.btnFilter.Location = new System.Drawing.Point(810, 12);
+            this.btnFilter.Location = new System.Drawing.Point(1025, 11);
             this.btnFilter.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnFilter.Name = "btnFilter";
             this.btnFilter.Size = new System.Drawing.Size(161, 30);
@@ -686,42 +724,12 @@ namespace Schedule_Management
             this.btnFilter.UseVisualStyleBackColor = true;
             this.btnFilter.Click += new System.EventHandler(this.btnFilter_Click);
             // 
-            // Column1
+            // txtBoxSearchName
             // 
-            this.Column1.FillWeight = 50F;
-            this.Column1.HeaderText = "NO.";
-            this.Column1.MinimumWidth = 6;
-            this.Column1.Name = "Column1";
-            // 
-            // Column4
-            // 
-            this.Column4.HeaderText = "Date and Time";
-            this.Column4.MinimumWidth = 6;
-            this.Column4.Name = "Column4";
-            // 
-            // Column2
-            // 
-            this.Column2.HeaderText = "Name";
-            this.Column2.MinimumWidth = 6;
-            this.Column2.Name = "Column2";
-            // 
-            // Column6
-            // 
-            this.Column6.HeaderText = "Class";
-            this.Column6.MinimumWidth = 6;
-            this.Column6.Name = "Column6";
-            // 
-            // Column3
-            // 
-            this.Column3.HeaderText = "ID";
-            this.Column3.MinimumWidth = 6;
-            this.Column3.Name = "Column3";
-            // 
-            // Column5
-            // 
-            this.Column5.HeaderText = "Status";
-            this.Column5.MinimumWidth = 6;
-            this.Column5.Name = "Column5";
+            this.txtBoxSearchName.Location = new System.Drawing.Point(855, 16);
+            this.txtBoxSearchName.Name = "txtBoxSearchName";
+            this.txtBoxSearchName.Size = new System.Drawing.Size(164, 22);
+            this.txtBoxSearchName.TabIndex = 49;
             // 
             // Form1
             // 
@@ -730,6 +738,7 @@ namespace Schedule_Management
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Beige;
             this.ClientSize = new System.Drawing.Size(1485, 748);
+            this.Controls.Add(this.txtBoxSearchName);
             this.Controls.Add(this.btnFilter);
             this.Controls.Add(this.btnImportExcel);
             this.Controls.Add(this.dataGridViewSchedule);
@@ -759,6 +768,7 @@ namespace Schedule_Management
             this.groupBox4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewSchedule)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -815,6 +825,7 @@ namespace Schedule_Management
         private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
+        private System.Windows.Forms.TextBox txtBoxSearchName;
     }
 }
 
